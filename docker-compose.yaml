@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    restart: always
+    ports:
+      - "11434:11434" # Expose Ollama API
+    volumes:
+      - ollama_data:/root/.ollama # Persist downloaded models
+
+  app:
+    build: .
+    container_name: my_app
+    depends_on:
+      - ollama
+    ports:
+      - "8501:8501" # Expose your Streamlit app
+    environment:
+      - OLLAMA_URL=http://ollama:11434/api/generate/ # Use Ollama inside Docker
+
+volumes:
+  ollama_data:
